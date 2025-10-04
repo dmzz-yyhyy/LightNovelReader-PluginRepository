@@ -3,6 +3,7 @@ on:
   merge_group:
     branches: [master]
   workflow_dispatch:
+  push:
 
 jobs:
   build:
@@ -35,7 +36,8 @@ jobs:
         with:
           commit_message: "Commit lastest web page"
           commit_user_name: "Web Page Commit Github Bot"
-          repository: ./webpage
+          file_pattern: webpage/**
+
 
 
 
