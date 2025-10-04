@@ -1,17 +1,20 @@
 <script setup lang="ts">
-  import { useCounterStore } from './stores/counter';
-  const store = useCounterStore()
+  import { StyleProvider, Themes } from '@varlet/ui'
+  import From from './components/From.vue';
 
+  StyleProvider(Themes.md3Light)
 </script>
 
 <template>
-  <h1>You did it!</h1>
-  <p>
-    Visit <a href="https://vuejs.org/" target="_blank" rel="noopener">vuejs.org</a> to read the
-    documentation
-  </p>
-  <div>Counter: {{ store.count }}</div>
-  <button @click="store.increment()">Increment</button>
+  <div class="outer">
+    <var-card title="UI测试">
+      <From/>
+    </var-card>
+  </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+  .outer{
+    width: 300px;
+  }
+</style>
