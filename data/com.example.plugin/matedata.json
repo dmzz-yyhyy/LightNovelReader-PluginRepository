@@ -1,0 +1,8 @@
+{
+  "id": "com.example.plugin",
+  "version": 0,
+  "name": "example",
+  "versionName": "0.0.1",
+  "author": "none",
+  "description": "a example plugin"
+}
