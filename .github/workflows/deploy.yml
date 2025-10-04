@@ -31,9 +31,10 @@ jobs:
 
       - name: Commit WebPage
         uses: stefanzweifel/git-auto-commit-action@v6
-        commit_message: "Commit lastest web page"
-        commit_user_name: "Web Page Commit Github Bot"
-        repository: ./webpage
+        with:
+          commit_message: "Commit lastest web page"
+          commit_user_name: "Web Page Commit Github Bot"
+          repository: ./webpage
 
 
 
