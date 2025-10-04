@@ -2,7 +2,7 @@ name: progress_plugin.yml
 on:
   pull_request:
     branches:
-      - master, test_ci
+      - main, test_ci
     paths:
       - data/**
 
