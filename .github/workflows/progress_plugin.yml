@@ -1,6 +1,6 @@
 name: progress_plugin.yml
 on:
-  push:
+  pull_request:
     branches:
       - master, test_ci
     paths:
