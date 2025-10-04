@@ -58,7 +58,7 @@ jobs:
             fi
 
       - name: Install jq
-        run: apt-get install jq
+        run: sudo apt-get install jq
 
       - name: Check json validity
         run: |
