@@ -1,0 +1,107 @@
+name: progress_plugin.yml
+on:
+  push:
+    branches:
+      - master, test_ci
+    paths:
+      - data/**
+
+jobs:
+  CheckValidity:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@v2
+
+      - name: Get all changed files
+        uses: tj-actions/changed-files@24d32ffd492484c1d75e0c0b894501ddb9d30d62
+        with:
+          files: |
+            data/**
+      
+      - name: Check if file absent
+        env:
+          ALL_CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_files }}
+        run: |
+            all_checks_passed=true
+            for file_path in ${ALL_CHANGED_FILES}; do
+            parent_dir=$(dirname "$file_path")
+            json_files=$(find "$parent_dir" -maxdepth 1 -name "matedata.json" | wc -l)
+            apk_files=$(find "$parent_dir" -maxdepth 1 -name "plugin.apk" | wc -l)
+            if [ "$json_files" -eq 1 ] && [ "$apk_files" -eq 1 ]; then
+            echo "✅ Status: Passed - Found 1 JSON file and 1 APK file"
+            else
+            echo "❌ Status: Failed"
+            if [ "$json_files" -eq 0 ]; then
+            echo "   Missing JSON configuration file"
+            fi
+            if [ "$apk_files" -eq 0 ]; then
+            echo "   Missing APK plugin file"
+            fi
+            if [ "$json_files" -gt 1 ]; then
+            echo "   Found multiple JSON configuration files"
+            fi
+            if [ "$apk_files" -gt 1 ]; then
+            echo "   Found multiple APK plugins"
+            fi
+            all_checks_passed=false
+            fi
+            done
+            echo "======================================"
+            if $all_checks_passed; then
+            echo "🎉 All checks passed!"
+            exit 0
+            else
+            echo "💥 Some checks failed!"
+            exit 1
+            fi
+
+      - name: Install jq
+        run: apt-get install jq
+
+      - name: Check json validity
+        run: |
+          all_valid=true
+    
+          for file in ${ALL_CHANGED_FILES}; do
+          
+          if [[ "$file" != *.json ]]; then
+          continue
+          fi
+          
+          if [[ ! -f "$file" ]]; then
+          echo "❌ 文件不存在: $file"
+          all_valid=false
+          continue
+          fi
+          
+          echo "检查: $file"
+          
+          if jq -e '
+          .id | type == "string" and
+          .version | type == "number" and
+          .name | type == "string" and
+          .versionName | type == "string" and
+          .author | type == "string" and
+          .description | type == "string"
+          ' "$file" > /dev/null 2>&1; then
+          echo "✅ 结构正确"
+          else
+          echo "❌ 结构错误"
+          
+          echo "   文件内容:"
+          cat "$file"
+          echo ""
+          
+          all_valid=false
+          fi
+          done
+          
+          if $all_valid; then
+          echo "所有JSON文件结构正确"
+          return 0
+          else
+          echo "部分JSON文件结构错误"
+          return 1
+          fi
+
