@@ -5,6 +5,11 @@ on:
       - main, test_ci
     paths:
       - data/**
+  push:
+    branches:
+      - main, test_ci
+    paths:
+      - data/**
 
 jobs:
   CheckValidity:
