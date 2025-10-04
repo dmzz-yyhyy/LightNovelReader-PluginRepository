@@ -100,9 +100,9 @@ jobs:
           
           if $all_valid; then
           echo "所有JSON文件结构正确"
-          return 0
+          exit 0
           else
           echo "部分JSON文件结构错误"
-          return 1
+          exit 1
           fi
 
