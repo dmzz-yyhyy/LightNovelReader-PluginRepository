@@ -1,0 +1,39 @@
+name: DeployWebPage
+on:
+  merge_group:
+    branches: [master]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '22.20.0'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build project
+        run: npm run build
+
+      - name: Copy WebPage
+        run: cp -r dist webpage
+
+      - name: Commit WebPage
+        uses: stefanzweifel/git-auto-commit-action@v6
+        commit_message: "Commit lastest web page"
+        commit_user_name: "Web Page Commit Github Bot"
+        repository: ./webpage
+
+
+
