@@ -16,6 +16,7 @@
   const plugins = ref<PluginData[]>([])
 
   const loading = ref(false)
+  const error = ref(false)
   const finished = ref(false)
   
   let first = false
@@ -25,9 +26,16 @@
 
   async function load() {
     if(!first){
-      const response = await fetch(`${url}plugins.json`)
-      data.value = await response.json()
-      first = true
+      try{
+        let response = await fetch(`${url}plugins.json`)
+        data.value = await response.json()
+        first = true
+      }catch(e){
+        console.error(e)
+        loading.value = false
+        error.value = true
+        return
+      }
     }
 
     loading.value = true
@@ -36,9 +44,14 @@
         finished.value = true
         break
       }
-      const response = await fetch(`${url}${data.value.plugins[index]?.id}/metadata.json`)
-      plugins.value.push(await response.json())
-      index ++
+      try{
+        let response = await fetch(`${url}${data.value.plugins[index]?.id}/metadata.json`)
+        plugins.value.push(await response.json())
+      }catch(e){
+        console.error(e)
+      }finally{
+        index ++
+      }
     }
     loading.value = false
   }
@@ -50,6 +63,7 @@
   <var-list
     :finished="finished"
     v-model:loading="loading"
+    v-model:error="error"
     @load="load"
   >
     <var-cell :key="plugin.id" v-for="plugin in plugins">

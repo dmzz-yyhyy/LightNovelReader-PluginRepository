@@ -1,5 +1,6 @@
 <script setup lang="ts">
   import { ref } from 'vue';
+  import { Snackbar } from '@varlet/ui'
 
   const props = defineProps<{
     plugin: PluginData
@@ -10,31 +11,27 @@
 
   async function download(url:string, filename:string){
     loading.value = true
-    fetch(url)
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('网络响应异常')
-      }
-      return response.blob()
-    })
-    .then(blob => {
-      const blobUrl = window.URL.createObjectURL(blob)
+    try{
+      let response = await fetch(url)
+      const blobUrl = window.URL.createObjectURL(await response.blob())
       const link = document.createElement('a')
       link.href = blobUrl
       link.download = filename
-      link.style.display = 'none'
-      
+      link.style.display = 'none' 
       document.body.appendChild(link)
       link.click()
       document.body.removeChild(link)
       window.URL.revokeObjectURL(blobUrl)
-    })
-    .catch(error => {
-      console.error('下载失败:', error)
-    })
-    .finally(()=>{
+    }catch(e){
+      Snackbar({
+        content: "下载失败，请重试",
+        duration: 1000,
+      })
+      console.error(e)
+      
+    }finally{
       loading.value = false
-    })
+    }
   }
 
 </script>
@@ -48,7 +45,7 @@
       <var-button 
       type="primary" 
       :loading="loading"
-      @click="()=>download(`${url}${plugin.id}/plugin.apk`, `${props.plugin.name}-${props.plugin.versionName}.apk`)">下载</var-button>
+      @click="()=>download(`${url}${plugin.id}/plugin.apk.lnrp`, `${props.plugin.name}-${props.plugin.versionName}.apk.lnrp`)">下载</var-button>
     </template>
   </var-card>
 </template>

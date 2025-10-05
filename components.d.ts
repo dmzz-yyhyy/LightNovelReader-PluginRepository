@@ -13,17 +13,6 @@ declare module 'vue' {
     VarButton: typeof import('@varlet/ui')['_ButtonComponent']
     VarCard: typeof import('@varlet/ui')['_CardComponent']
     VarCell: typeof import('@varlet/ui')['_CellComponent']
-    VarCheckbox: typeof import('@varlet/ui')['_CheckboxComponent']
-    VarCheckboxGroup: typeof import('@varlet/ui')['_CheckboxGroupComponent']
-    VarForm: typeof import('@varlet/ui')['_FormComponent']
-    VarInput: typeof import('@varlet/ui')['_InputComponent']
     VarList: typeof import('@varlet/ui')['_ListComponent']
-    VarLoading: typeof import('@varlet/ui')['_LoadingComponent']
-    VarOption: typeof import('@varlet/ui')['_OptionComponent']
-    VarRadio: typeof import('@varlet/ui')['_RadioComponent']
-    VarRadioGroup: typeof import('@varlet/ui')['_RadioGroupComponent']
-    VarSelect: typeof import('@varlet/ui')['_SelectComponent']
-    VarSpace: typeof import('@varlet/ui')['_SpaceComponent']
-    VarSwitch: typeof import('@varlet/ui')['_SwitchComponent']
   }
 }
