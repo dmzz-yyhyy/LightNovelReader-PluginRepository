@@ -25,4 +25,11 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     },
   },
+  server: {
+    proxy: {
+    '/https://github.com': {
+        changeOrigin: true
+      }
+    }
+  }
 })
