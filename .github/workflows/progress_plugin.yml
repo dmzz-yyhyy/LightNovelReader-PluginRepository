@@ -122,10 +122,18 @@ jobs:
       - name: Check out
         uses: actions/checkout@v2
 
+      - name: Get all changed files
+        uses: tj-actions/changed-files@24d32ffd492484c1d75e0c0b894501ddb9d30d62
+        with:
+          files: |
+            data/**
+
       - name: Install jq
         run: sudo apt-get install jq
 
       - name: Sync plugins.json
+        env:
+          ALL_CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_files }}
         run: |
             PLUGINS_FILE="data/plugins.json"
             for file in ${ALL_CHANGED_FILES}; do
