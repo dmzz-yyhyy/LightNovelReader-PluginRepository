@@ -7,8 +7,6 @@ on:
 jobs:
   CheckValidity:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
       - uses: actions/checkout@v4
         with:
@@ -119,10 +117,13 @@ jobs:
   ChangeRootPluginsMetadata:
     needs: CheckValidity
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Check out
         uses: actions/checkout@v2
         with:
+          ref: ${{ github.head_ref }}
           fetch-depth: 0
 
       - name: Get all changed files
