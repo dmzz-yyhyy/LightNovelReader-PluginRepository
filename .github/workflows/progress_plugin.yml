@@ -7,9 +7,12 @@ on:
 jobs:
   CheckValidity:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
-      - name: Check out
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
 
       - name: Get all changed files
         uses: tj-actions/changed-files@24d32ffd492484c1d75e0c0b894501ddb9d30d62
@@ -165,3 +168,8 @@ jobs:
           jq_filter+="))"
           jq "$jq_filter" "$PLUGINS_FILE" > "${PLUGINS_FILE}.tmp" && mv "${PLUGINS_FILE}.tmp" "$PLUGINS_FILE"
           echo "Removed ${#ids_to_remove[@]} plugins without directories"
+
+      - uses: stefanzweifel/git-auto-commit-action@v6
+        with:
+          commit_message: "parse plugin information"
+          file_pattern: 'data/**'
