@@ -15,7 +15,7 @@ jobs:
           fetch-depth: 0
 
       - name: Get all changed files
-        uses: tj-actions/changed-files@v7
+        uses: tj-actions/changed-files@24d32ffd492484c1d75e0c0b894501ddb9d30d62
         with:
           files: |
             data/**
@@ -125,7 +125,7 @@ jobs:
           fetch-depth: 0
 
       - name: Get all changed files
-        uses: tj-actions/changed-files@v7
+        uses: tj-actions/changed-files@24d32ffd492484c1d75e0c0b894501ddb9d30d62
         with:
           files: |
             data/**
