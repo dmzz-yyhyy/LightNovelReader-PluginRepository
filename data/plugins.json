@@ -1,4 +1,8 @@
 {
   "plugins": [
+    {
+      "id": "com.example.plugin",
+      "name": "example"
+    }
   ]
 }

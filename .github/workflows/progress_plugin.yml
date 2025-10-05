@@ -1,13 +1,6 @@
 name: progress_plugin.yml
 on:
   pull_request:
-    branches:
-      - main, test_ci
-    paths:
-      - data/**
-  push:
-    branches:
-      - main, test_ci
     paths:
       - data/**
 
@@ -15,10 +8,12 @@ jobs:
   CheckValidity:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Get all changed files
+        id: changed-files
         uses: tj-actions/changed-files@24d32ffd492484c1d75e0c0b894501ddb9d30d62
         with:
           files: |
@@ -31,7 +26,7 @@ jobs:
             all_checks_passed=true
             for file_path in ${ALL_CHANGED_FILES}; do
             parent_dir=$(dirname "$file_path")
-            json_files=$(find "$parent_dir" -maxdepth 1 -name "matedata.json" | wc -l)
+            json_files=$(find "$parent_dir" -maxdepth 1 -name "metadata.json" | wc -l)
             apk_files=$(find "$parent_dir" -maxdepth 1 -name "plugin.apk" | wc -l)
             if [ "$json_files" -eq 1 ] && [ "$apk_files" -eq 1 ]; then
             echo "✅ Status: Passed - Found 1 JSON file and 1 APK file"
@@ -62,51 +57,132 @@ jobs:
             fi
 
       - name: Install jq
-        run: apt-get install jq
+        run: sudo apt-get install jq
 
       - name: Check json validity
         run: |
           all_valid=true
-    
           for file in ${ALL_CHANGED_FILES}; do
-          
-          if [[ "$file" != *.json ]]; then
-          continue
-          fi
-          
-          if [[ ! -f "$file" ]]; then
-          echo "❌ 文件不存在: $file"
-          all_valid=false
-          continue
-          fi
-          
-          echo "检查: $file"
-          
-          if jq -e '
-          .id | type == "string" and
-          .version | type == "number" and
-          .name | type == "string" and
-          .versionName | type == "string" and
-          .author | type == "string" and
-          .description | type == "string"
-          ' "$file" > /dev/null 2>&1; then
-          echo "✅ 结构正确"
-          else
-          echo "❌ 结构错误"
-          
-          echo "   文件内容:"
-          cat "$file"
-          echo ""
-          
-          all_valid=false
-          fi
+            if [[ "$file" != *.json ]]; then
+              continue
+            fi
+            if [[ ! -f "$file" ]]; then
+              echo "❌ File does not exist: $file"
+              all_valid=false
+              continue
+            fi
+            echo "Checking: $file"
+            if jq -e '
+            .id | type == "string" and
+            .version | type == "number" and
+            .name | type == "string" and
+            .versionName | type == "string" and
+            .author | type == "string" and
+            .description | type == "string"
+            ' "$file" > /dev/null 2>&1; then
+              echo "✅ Structure is correct"
+            else
+              echo "❌ Structure is incorrect"
+              echo "   File content:"
+              cat "$file"
+              echo ""
+              all_valid=false
+            fi
           done
-          
           if $all_valid; then
-          echo "所有JSON文件结构正确"
-          return 0
+              echo "All JSON files have correct structure"
+              exit 0
           else
-          echo "部分JSON文件结构错误"
-          return 1
+              echo "Some JSON files have incorrect structure"
+              exit 1
           fi
 
+      - name: Check dir name
+        run: |
+          all_match=true
+          for file in "${ALL_CHANGED_FILES[@]}"; do
+          [[ "$file" != *.json || ! -f "$file" ]] && continue
+          dir_name=$(basename "$(dirname "$file")")
+          json_id=$(jq -r '.id' "$file" 2>/dev/null)
+          if [[ "$dir_name" == "$json_id" ]]; then
+          echo "✅ $file: Directory '$dir_name' matches ID '$json_id'"
+          else
+          echo "❌ $file: Directory '$dir_name' does not match ID '$json_id'"
+          all_match=false
+          fi
+          done
+          $all_match && exit 0 || exit 1
+
+
+  ChangeRootPluginsMetadata:
+    needs: CheckValidity
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Check out
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+
+      - name: Get all changed files
+        id: changed-files
+        uses: tj-actions/changed-files@24d32ffd492484c1d75e0c0b894501ddb9d30d62
+        with:
+          files: |
+            data/**
+
+      - name: Install jq
+        run: sudo apt-get install jq
+
+      - name: Sync plugins.json
+        env:
+          ALL_CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_files }}
+        run: |
+            PLUGINS_FILE="data/plugins.json"
+            for file in ${ALL_CHANGED_FILES}; do
+              [[ "$file" != *.json ]] && continue
+              [[ ! -f "$file" ]] && echo "Skip non-existent files: $file" && continue
+
+              echo "Process: $file"
+              plugin_data=$(jq -c '{id:
+                .id, name: .name}' "$file" 2>/dev/null)
+
+              if [[ -n "$plugin_data" ]]; then
+                plugin_id=$(echo "$plugin_data" | jq -r '.id')
+                jq --argjson new "$plugin_data" --arg id "$plugin_id" \
+                  'if (.plugins | map(select(.id == $id)) | length) > 0 
+                            then .plugins |= map(if .id == $id then $new else . end)
+                            else .plugins += [$new] end' \
+                  "$PLUGINS_FILE" > "${PLUGINS_FILE}.tmp" && mv "${PLUGINS_FILE}.tmp" "$PLUGINS_FILE"
+                echo "✅ Succeeded"
+                exit 0
+              else
+                echo "❌ Failed"
+                exit 1
+              fi
+            done
+
+      - name: Clean up plugins.json
+        run: |
+          PLUGINS_FILE="data/plugins.json"
+          TARGET_DIR="data/"
+          
+          ids_to_remove=()
+          while IFS= read -r id; do
+          [[ -n "$id" && ! -d "$TARGET_DIR/$id" ]] && ids_to_remove+=("$id")
+          done < <(jq -r '.plugins[].id' "$PLUGINS_FILE")
+          [[ ${#ids_to_remove[@]} -eq 0 ]] && { echo "No plugins to remove"; exit 0; }
+          jq_filter=".plugins |= map(select(.id != \"${ids_to_remove[0]}\""
+          for ((i=1; i<${#ids_to_remove[@]}; i++)); do
+          jq_filter+=" and .id != \"${ids_to_remove[$i]}\""
+          done
+          jq_filter+="))"
+          jq "$jq_filter" "$PLUGINS_FILE" > "${PLUGINS_FILE}.tmp" && mv "${PLUGINS_FILE}.tmp" "$PLUGINS_FILE"
+          echo "Removed ${#ids_to_remove[@]} plugins without directories"
+
+      - uses: stefanzweifel/git-auto-commit-action@v6
+        with:
+          commit_message: "parse plugin information"
+          file_pattern: 'data/**'
