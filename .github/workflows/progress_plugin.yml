@@ -127,7 +127,7 @@ jobs:
 
       - name: Sync plugins.json
         run: |
-            PLUGINS_FILE="plugins.json"
+            PLUGINS_FILE="data/plugins.json"
             for file in ${ALL_CHANGED_FILES}; do
               [[ "$file" != *.json ]] && continue
               [[ ! -f "$file" ]] && echo "Skip non-existent files: $file" && continue
@@ -153,7 +153,7 @@ jobs:
 
       - name: Clean up plugins.json
         run: |
-          PLUGINS_FILE="plugins.json"
+          PLUGINS_FILE="data/plugins.json"
           TARGET_DIR="data/"
           
           ids_to_remove=()
