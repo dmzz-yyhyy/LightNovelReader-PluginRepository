@@ -27,7 +27,7 @@ jobs:
             for file_path in ${ALL_CHANGED_FILES}; do
             parent_dir=$(dirname "$file_path")
             json_files=$(find "$parent_dir" -maxdepth 1 -name "metadata.json" | wc -l)
-            apk_files=$(find "$parent_dir" -maxdepth 1 -name "plugin.apk" | wc -l)
+            apk_files=$(find "$parent_dir" -maxdepth 1 -name "plugin.apk.lnrp" | wc -l)
             if [ "$json_files" -eq 1 ] && [ "$apk_files" -eq 1 ]; then
             echo "✅ Status: Passed - Found 1 JSON file and 1 APK file"
             else
