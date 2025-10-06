@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@varlet/ui": "^3.11.4",
+    "jszip": "^3.10.1",
     "pinia": "^3.0.3",
     "vue": "^3.5.22"
   },
