@@ -26,15 +26,16 @@ jobs:
         env:
           ALL_CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_files }}
         run: |
-          if [[ -z "${ALL_CHANGED_FILES}" ]]; then
+          IFS=$' \t\n' read -r -a files_array <<< "${ALL_CHANGED_FILES}"
+          if [[ -z "${files_array[@]}" ]]; then
           echo "Error: ALL_CHANGED_FILES array is empty"
           exit 1
           fi
-          echo "Number of changed files: ${ALL_CHANGED_FILES}"
+          echo "Number of changed files: ${files_array[@]}"
           echo "Changed files list:"
-          printf '%s\n' "${ALL_CHANGED_FILES}"
+          printf '%s\n' "${files_array[@]}"
           declare -A dirs_map
-          for file in "${ALL_CHANGED_FILES}"; do
+          for file in "${files_array[@]}"; do
           if [[ -n "$file" ]]; then
           parent_dir=$(dirname "$file")
           echo "from $file\n"
@@ -92,6 +93,8 @@ jobs:
           exit 0
 
       - name: Check json validity
+        env:
+          ALL_CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_files }}
         run: |
           all_valid=true
           for file in ${ALL_CHANGED_FILES}; do
@@ -130,6 +133,8 @@ jobs:
           fi
 
       - name: Check dir name
+        env:
+          ALL_CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_files }}
         run: |
           all_match=true
           for file in "${ALL_CHANGED_FILES[@]}"; do
