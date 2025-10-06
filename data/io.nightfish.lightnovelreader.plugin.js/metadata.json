@@ -1,8 +1,0 @@
-{
-  "id": "io.nightfish.lightnovelreader.plugin.js",
-  "version": 1000,
-  "name": "JsLoader",
-  "versionName": "0.0.1",
-  "author": "NightFish",
-  "description": "用于加载外部JavaScrip数据源的插件"
-}
