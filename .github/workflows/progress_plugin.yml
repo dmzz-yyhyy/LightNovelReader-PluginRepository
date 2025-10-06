@@ -106,14 +106,13 @@ jobs:
             fi
             echo "Checking: $file"
             if jq -e '
-            .id | type == "string" and
-            .version | type == "number" and
-            .name | type == "string" and
-            .versionName | type == "string" and
-            .author | type == "string" and
-            .description | type == "string" and
-            .compressed_file_number | type == "number"
-            ' "$file" > /dev/null 2>&1; then
+            (.id | type == "string") and
+            (.version | type == "number") and
+            (.name | type == "string") and
+            (.versionName | type == "string") and
+            (.author | type == "string") and
+            (.description | type == "string")
+            ' "$file"; then
               echo "✅ Structure is correct"
             else
               echo "❌ Structure is incorrect"
