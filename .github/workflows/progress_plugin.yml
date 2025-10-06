@@ -112,7 +112,7 @@ jobs:
             .versionName | type == "string" and
             .author | type == "string" and
             .description | type == "string" and
-            .compressed_file_number | type == "Int"
+            .compressed_file_number | type == "number"
             ' "$file" > /dev/null 2>&1; then
               echo "✅ Structure is correct"
             else
