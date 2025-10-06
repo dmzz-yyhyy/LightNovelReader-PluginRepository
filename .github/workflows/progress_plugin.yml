@@ -18,46 +18,76 @@ jobs:
         with:
           files: |
             data/**
-      
+
+      - name: Install jq
+        run: sudo apt-get install jq
+
       - name: Check if file absent
         env:
           ALL_CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_files }}
         run: |
-            all_checks_passed=true
-            for file_path in ${ALL_CHANGED_FILES}; do
-            parent_dir=$(dirname "$file_path")
-            json_files=$(find "$parent_dir" -maxdepth 1 -name "metadata.json" | wc -l)
-            apk_files=$(find "$parent_dir" -maxdepth 1 -name "plugin.apk.lnrp" | wc -l)
-            if [ "$json_files" -eq 1 ] && [ "$apk_files" -eq 1 ]; then
-            echo "✅ Status: Passed - Found 1 JSON file and 1 APK file"
-            else
-            echo "❌ Status: Failed"
-            if [ "$json_files" -eq 0 ]; then
-            echo "   Missing JSON configuration file"
-            fi
-            if [ "$apk_files" -eq 0 ]; then
-            echo "   Missing APK plugin file"
-            fi
-            if [ "$json_files" -gt 1 ]; then
-            echo "   Found multiple JSON configuration files"
-            fi
-            if [ "$apk_files" -gt 1 ]; then
-            echo "   Found multiple APK plugins"
-            fi
-            all_checks_passed=false
-            fi
-            done
-            echo "======================================"
-            if $all_checks_passed; then
-            echo "🎉 All checks passed!"
-            exit 0
-            else
-            echo "💥 Some checks failed!"
-            exit 1
-            fi
-
-      - name: Install jq
-        run: sudo apt-get install jq
+          if [[ ${ALL_CHANGED_FILES} -eq 0 ]]; then
+          echo "Error: ALL_CHANGED_FILES array is empty"
+          exit 1
+          fi
+          echo "Number of changed files: ${ALL_CHANGED_FILES}"
+          echo "Changed files list:"
+          printf '%s\n' "${ALL_CHANGED_FILES}"
+          declare -A dirs_map
+          for file in "${ALL_CHANGED_FILES}"; do
+          if [[ -n "$file" ]]; then
+          parent_dir=$(dirname "$file")
+          dirs_map["$parent_dir"]=1
+          fi
+          done
+          parent_dirs=("${!dirs_map[@]}")
+          if [[ ${#parent_dirs[@]} -eq 0 ]]; then
+          echo "Error: Unable to get parent directories"
+          exit 1
+          fi
+          echo "Parent directories to check:"
+          printf '%s\n' "${parent_dirs[@]}"
+          echo "------------------------"
+          for dir in "${parent_dirs[@]}"; do
+          echo "Checking directory: $dir"
+          if [[ ! -f "$dir/metadata.json" ]]; then
+          echo "Error: Directory $dir is missing metadata.json file"
+          exit 1
+          fi
+          compressed_file_number=$(jq -r '.compressed_file_number // empty' "$dir/metadata.json" 2>/dev/null)
+          if [[ $? -ne 0 ]]; then
+          compressed_file_number=""
+          fi
+          if [[ -z "$compressed_file_number" ]] || ! [[ "$compressed_file_number" =~ ^[0-9]+$ ]] || [[ "$compressed_file_number" -le 0 ]]; then
+          if [[ ! -f "$dir/plugin.apk.lnrp" ]]; then
+          echo "Error: Directory $dir is missing plugin.apk.lnrp file"
+          exit 1
+          fi
+          else
+          missing_files=()
+          for ((i=1; i<=compressed_file_number; i++)); do
+          if [[ $i -lt 10 ]]; then
+          formatted_num="00$i"
+          elif [[ $i -lt 100 ]]; then
+          formatted_num="0$i"
+          else
+          formatted_num="$i"
+          fi
+          filename="plugin.zip.$formatted_num"
+          if [[ ! -f "$dir/$filename" ]]; then
+          missing_files+=("$filename")
+          fi
+          done
+          if [[ ${#missing_files[@]} -gt 0 ]]; then
+          echo "Error: Directory $dir is missing the following files: ${missing_files[*]}"
+          exit 1
+          fi
+          fi
+          echo "Directory $dir check passed"
+          echo "---"
+          done
+          echo "All directory checks passed!"
+          exit 0
 
       - name: Check json validity
         run: |
