@@ -26,15 +26,15 @@ jobs:
         env:
           ALL_CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_files }}
         run: |
-          if [[ ${#ALL_CHANGED_FILES[@]} -eq 0 ]]; then
+          if [[ ${ALL_CHANGED_FILES} -eq 0 ]]; then
           echo "Error: ALL_CHANGED_FILES array is empty"
           exit 1
           fi
-          echo "Number of changed files: ${#ALL_CHANGED_FILES[@]}"
+          echo "Number of changed files: ${ALL_CHANGED_FILES}"
           echo "Changed files list:"
-          printf '%s\n' "${#ALL_CHANGED_FILES[@]}"
+          printf '%s\n' "${ALL_CHANGED_FILES}"
           declare -A dirs_map
-          for file in "${#ALL_CHANGED_FILES[@]}"; do
+          for file in "${ALL_CHANGED_FILES}"; do
           if [[ -n "$file" ]]; then
           parent_dir=$(dirname "$file")
           dirs_map["$parent_dir"]=1
