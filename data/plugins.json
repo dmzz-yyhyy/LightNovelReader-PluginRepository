@@ -3,6 +3,10 @@
     {
       "id": "com.example.plugin",
       "name": "example"
+    },
+    {
+      "id": "io.nightfish.lightnovelreader.plugin.js",
+      "name": "JsLoader"
     }
   ]
 }
