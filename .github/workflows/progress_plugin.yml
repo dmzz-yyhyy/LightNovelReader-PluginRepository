@@ -38,8 +38,6 @@ jobs:
           for file in "${files_array[@]}"; do
           if [[ -n "$file" ]]; then
           parent_dir=$(dirname "$file")
-          echo "from $file\n"
-          echo "to $parent_dir\n"
           dirs_map["$parent_dir"]=1
           fi
           done
@@ -113,7 +111,8 @@ jobs:
             .name | type == "string" and
             .versionName | type == "string" and
             .author | type == "string" and
-            .description | type == "string"
+            .description | type == "string" and
+            .compressed_file_number | type == "Int"
             ' "$file" > /dev/null 2>&1; then
               echo "✅ Structure is correct"
             else
