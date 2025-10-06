@@ -5,4 +5,5 @@ interface PluginData{
   versionName: string,
   author: string,
   description: string
+  compressed_file_number?: number,
 }
