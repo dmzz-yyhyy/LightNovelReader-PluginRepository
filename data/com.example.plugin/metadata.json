@@ -4,5 +4,6 @@
   "name": "example",
   "versionName": "0.0.1",
   "author": "none",
-  "description": "a example plugin"
+  "description": "a example plugin",
+  "compressed_file_number": -1
 }

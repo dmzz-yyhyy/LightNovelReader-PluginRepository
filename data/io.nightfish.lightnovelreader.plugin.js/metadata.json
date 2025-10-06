@@ -4,5 +4,6 @@
   "name": "JsLoader",
   "versionName": "0.0.1",
   "author": "NightFish",
-  "description": "用于加载外部JavaScrip数据源的插件"
+  "description": "用于加载外部JavaScrip数据源的插件",
+  "compressed_file_number": 1
 }
