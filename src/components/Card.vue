@@ -52,15 +52,17 @@
     progress.value = 0
     progressShow.value = true
 
-    const blobs = [];
     const part = 100 / fileList.length;
 
-    for (const fileInfo of fileList) {
-      const response = await fetch(fileInfo.url);
-      const blob = await response.blob();
-      blobs.push(blob);
-      progress.value += part
-    }
+    const trackedPromises = fileList.map((data)=>{
+      return fetch(data.url).then((response)=>{
+        return response.blob();
+      }).finally(() => {
+        progress.value += part
+      })
+    })
+
+    const blobs = await Promise.all(trackedPromises)
     const mergedBlob = new Blob(blobs, { type: 'application/octet-stream' });
 
     const zip = new JSZip();
