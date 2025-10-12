@@ -109,7 +109,7 @@ jobs:
             (.id | type == "string") and
             (.version | type == "number") and
             (.name | type == "string") and
-            (.versionName | type == "string") and
+            (.version_name | type == "string") and
             (.author | type == "string") and
             (.description | type == "string")
             ' "$file"; then

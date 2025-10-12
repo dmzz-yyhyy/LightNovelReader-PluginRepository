@@ -2,7 +2,7 @@
   "id": "com.example.plugin",
   "version": 1,
   "name": "example",
-  "versionName": "0.0.1",
+  "version_name": "0.0.1",
   "author": "none",
   "description": "a example plugin",
   "compressed_file_number": 8
