@@ -27,9 +27,9 @@
             url: `${props.url}${props.plugin.id}/plugin.zip.${n}`,
           })
         }
-        await downloadAndMergeParts(fileList, `${props.plugin.name}-${props.plugin.versionName}.apk.lnrp`)
+        await downloadAndMergeParts(fileList, `${props.plugin.name}-${props.plugin.version_name}.apk.lnrp`)
       }else{
-        await downloadSingleFile(`${props.url}${props.plugin.id}/plugin.apk.lnrp`, `${props.plugin.name}-${props.plugin.versionName}.apk.lnrp`)
+        await downloadSingleFile(`${props.url}${props.plugin.id}/plugin.apk.lnrp`, `${props.plugin.name}-${props.plugin.version_name}.apk.lnrp`)
       }
     }catch(e){
       Snackbar({
@@ -91,7 +91,7 @@
 
 <template>
   <var-card :title="props.plugin.name">
-    <div>版本: {{ props.plugin.versionName }}</div>
+    <div>版本: {{ props.plugin.version_name }}</div>
     <div>作者: {{ props.plugin.author }}</div>
     <div>描述: {{ props.plugin.description }}</div>
     <template #extra>
