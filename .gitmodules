@@ -1,0 +1,4 @@
+[submodule "plugins/io.yukonisen.hitomi4lnr"]
+	path = plugins/io.yukonisen.hitomi4lnr
+	url = https://github.com/yukonisen/test-repo.git
+	branch = main
