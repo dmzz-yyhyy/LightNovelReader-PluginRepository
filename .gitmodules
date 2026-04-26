@@ -1,0 +1,4 @@
+[submodule "plugins/io.nightfish.potatolib"]
+	path = plugins/io.nightfish.potatolib
+	url = https://github.com/yukonisen/plugin-distributions.git
+	branch = potatolib
