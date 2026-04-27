@@ -44,7 +44,7 @@ your-plugin-repo/
 克隆插件仓库：
 
 ```
-git clone [https://github.com/dmzz-yyhyy/LightNovelReader-PluginRepository.git](https://github.com/dmzz-yyhyy/LightNovelReader-PluginRepository.git)
+git clone https://github.com/dmzz-yyhyy/LightNovelReader-PluginRepository.git
 cd LightNovelReader-PluginRepository/
 ```
 
@@ -80,7 +80,7 @@ git push origin add-plugin-<插件名称>
 克隆仓库：
 
 ```
-git clone [https://github.com/dmzz-yyhyy/LightNovelReader-PluginRepository.git](https://github.com/dmzz-yyhyy/LightNovelReader-PluginRepository.git)
+git clone https://github.com/dmzz-yyhyy/LightNovelReader-PluginRepository.git
 cd LightNovelReader-PluginRepository/
 ```
 
