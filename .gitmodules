@@ -10,3 +10,7 @@
 	path = plugins/io.limao996.aliceswlib
 	url = https://github.com/limao996/LNR-AliceswLib-Repo.git
 	branch = add-plugin-aliceswlib
+[submodule "plugins/io.limao996.songdalawlib"]
+	path = plugins/io.limao996.songdalawlib
+	url = https://github.com/limao996/LNR-SongdalawLib-Repo.git
+	branch = add-plugin-songdalawlib
