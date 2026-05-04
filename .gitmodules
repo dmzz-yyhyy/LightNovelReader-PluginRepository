@@ -2,11 +2,7 @@
 	path = plugins/io.nightfish.potatolib
 	url = https://github.com/yukonisen/plugin-distributions.git
 	branch = potatolib
-[submodule "plugins/io.limao996.fanqielib"]
-	path = plugins/io.limao996.fanqielib
-	url = https://github.com/limao996/LNR-FanqieNovel-Repo.git
-	branch = fanqielib
 [submodule "plugins/io.limao996.hoohoolib"]
 	path = plugins/io.limao996.hoohoolib
 	url = https://github.com/limao996/LNR-HoohooLib-Repo.git
-	branch = add-plugin-hoohoolib
+	branch = hoohoolib
